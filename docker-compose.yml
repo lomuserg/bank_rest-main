@@ -1,0 +1,12 @@
+# 
+# docker-compose.yml — определяет сервисы для разработки и тестирования.
+services:
+  master_postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: bankCards
+    ports:
+      - "5432:5432"
+
