@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: BankCards
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/bankCards
+    username: user
+    password: secret
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db.changelog-master.xml
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+
+security:
+  jwt:
+    token:
+      secret-key: my_very_secret_key_here_1234567890
+
+
+Что нужно сделать:
+  - Указать настройки подключения к базе данных.
+  - Указать порт приложения.
+  - Настроить параметры безопасности и JWT.
+  - Включить Swagger UI.
