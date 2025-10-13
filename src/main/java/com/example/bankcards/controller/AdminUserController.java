@@ -17,20 +17,17 @@ public class AdminUserController {
 
     private final UserService userService;
 
-    // GET /users — все пользователи
     @GetMapping
     public ResponseEntity<Page<UserDto>> getAllUsers(Pageable pageable) {
         return ResponseEntity.ok(userService.findAll(pageable));
     }
 
-    // DELETE /users/{id} — удалить пользователя
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
-    // PUT /users/{id}/ban — заблокировать/разблокировать
     @PutMapping("/{id}/ban")
     public ResponseEntity<?> setBanned(@PathVariable Long id, @RequestParam boolean banned) {
         userService.setBanned(id, banned);

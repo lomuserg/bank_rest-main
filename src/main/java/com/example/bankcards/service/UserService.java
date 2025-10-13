@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,11 +51,6 @@ public class UserService {
     public User findByLogin(String login) {
         return userRepository.getByLogin(login);
     }
-
-//    public UserDto findByLogin(String login) {
-//        User user = userRepository.getByLogin(login);
-//        return userMapper.toUserDto(user);
-//    }
 
     public User getUserById(Long id) {
         return userRepository.findById(id);
