@@ -9,11 +9,14 @@ import com.example.bankcards.exception.AppException;
 import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,7 +53,29 @@ public class UserService {
         return userRepository.getByLogin(login);
     }
 
+//    public UserDto findByLogin(String login) {
+//        User user = userRepository.getByLogin(login);
+//        return userMapper.toUserDto(user);
+//    }
+
     public User getUserById(Long id) {
         return userRepository.findById(id);
+    }
+
+    public Page<UserDto> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(userMapper::toUserDto);
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public void setBanned(Long id, boolean banned) {
+        userRepository.updateBannedStatus(id, banned);
+    }
+
+    public User getUserByLogin(String login) {
+        return userRepository.getByLogin(login);
     }
 }
