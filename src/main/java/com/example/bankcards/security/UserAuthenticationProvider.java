@@ -13,10 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
@@ -56,7 +59,15 @@ public class UserAuthenticationProvider {
             User user = userService.findByLogin(decoded.getSubject());
             UserDto userDto = userMapper.toUserDto(user);
 
-            return new UsernamePasswordAuthenticationToken(userDto, null, Collections.emptyList());
+            Collection<? extends GrantedAuthority> authorities = Collections.singletonList(
+                    new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+            );
+
+            return new UsernamePasswordAuthenticationToken(
+                    userDto,
+                    null,
+                    authorities
+            );
         } catch (Exception e) {
             throw new RuntimeException("Invalid or expired token", e);
         }
