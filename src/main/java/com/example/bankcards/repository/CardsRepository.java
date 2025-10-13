@@ -22,7 +22,7 @@ public class CardsRepository {
         return cardsJpaRepository.save(card);
     }
 
-    public boolean existsByLogin(String cardNumber) {
+    public boolean existsByCardNumber(String cardNumber) {
         return cardsJpaRepository.existsByCardNumber(cardNumber);
     }
 

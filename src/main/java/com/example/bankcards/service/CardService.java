@@ -10,6 +10,7 @@ import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.CardsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.validator.routines.CreditCardValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,8 @@ public class CardService {
     private final CardsRepository cardsRepository;
     private final UserService userService;
     private final CardMapper cardMapper;
+    private final CreditCardValidator visaValidator = new CreditCardValidator(CreditCardValidator.VISA);
+    private final CreditCardValidator mcValidator = new CreditCardValidator(CreditCardValidator.MASTERCARD);
 
     // 🔹 Админ: Создать новую карту
     public CardDto createCard(CreateCardRequest request) {
@@ -39,6 +42,11 @@ public class CardService {
 
         Card saved = cardsRepository.save(card);
         return cardMapper.toDto(saved);
+    }
+
+    public boolean isValid(String cardNumber) {
+        return (visaValidator.isValid(cardNumber) || mcValidator.isValid(cardNumber))
+                && cardsRepository.existsByCardNumber(cardNumber);
     }
 
     // 🔹 Пользователь: Получить свои карты (с фильтрацией по статусу)
