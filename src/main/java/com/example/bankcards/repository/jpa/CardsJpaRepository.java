@@ -24,5 +24,5 @@ public interface CardsJpaRepository extends JpaRepository<Card, Long> {
 
     Page<Card> findAll(Pageable pageable);
 
-    boolean existsByCardNumber(String cardNumber);
+    boolean existsByCardHash(String cardHash);
 }

@@ -7,18 +7,20 @@ import java.util.Random;
 
 @Component
 public class DebitCardGenerator {
-
     private final Faker faker = new Faker();
+    private final Random random = new Random();
 
     public String generateCardNumber() {
-        return faker.business().creditCardNumber();
-    }
+        String baseNumber = faker.business().creditCardNumber();
 
-    public String generateVisa() {
-        return faker.finance().creditCard();
-    }
+        long timestamp = System.currentTimeMillis();
+        String uniquePart = String.valueOf(timestamp % 10000);
 
-    public String generateMastercard() {
-        return "5" + new Random().nextInt(1000000000) + new Random().nextInt(100000000);
+        String cleaned = baseNumber.replaceAll("[^0-9]", "");
+        if (cleaned.length() > 12) {
+            cleaned = cleaned.substring(0, 12);
+        }
+
+        return cleaned + String.format("%04d", random.nextInt(10000));
     }
 }

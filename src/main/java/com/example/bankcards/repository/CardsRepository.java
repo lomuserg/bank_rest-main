@@ -22,8 +22,8 @@ public class CardsRepository {
         return cardsJpaRepository.save(card);
     }
 
-    public boolean existsByCardNumber(String cardNumber) {
-        return cardsJpaRepository.existsByCardNumber(cardNumber);
+    public boolean existsByCardHash(String cardHash) {
+        return cardsJpaRepository.existsByCardHash(cardHash);
     }
 
     public Card findById(Long id) {

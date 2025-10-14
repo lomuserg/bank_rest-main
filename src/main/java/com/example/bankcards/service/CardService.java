@@ -8,15 +8,19 @@ import com.example.bankcards.entity.card.CardStatus;
 import com.example.bankcards.exception.AppException;
 import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.CardsRepository;
+import com.example.bankcards.util.CardNumberCryptoUtil;
+import com.example.bankcards.util.DebitCardGenerator;
+import com.example.bankcards.util.HashUtil;
+import com.example.bankcards.util.MaskingUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.validator.routines.CreditCardValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -24,29 +28,51 @@ public class CardService {
     private final CardsRepository cardsRepository;
     private final UserService userService;
     private final CardMapper cardMapper;
-    private final CreditCardValidator visaValidator = new CreditCardValidator(CreditCardValidator.VISA);
-    private final CreditCardValidator mcValidator = new CreditCardValidator(CreditCardValidator.MASTERCARD);
+    private final DebitCardGenerator debitCardGenerator;
+    private static final int MAX_GENERATION_ATTEMPTS = 10;
+    private final CardNumberCryptoUtil cryptoUtil;
 
-    // 🔹 Админ: Создать новую карту
     public CardDto createCard(CreateCardRequest request) {
-
         User owner = userService.getUserById(request.getOwnerId());
 
+        String cardNumber = generateUniqueCardNumber();
+        String encryptedCardNumber = cryptoUtil.encrypt(cardNumber);
+
         Card card = Card.builder()
-                .cardNumber(request.getCardNumber()) // будет зашифровано через Jasypt или в EntityListener
+                .cardNumber(encryptedCardNumber)
+                .cardHash(HashUtil.sha256(cardNumber))
                 .owner(owner)
                 .expiryDate(request.getExpiryDate())
                 .status(CardStatus.ACTIVE)
-                .balance(request.getBalance() != null ? request.getBalance() : BigDecimal.ZERO)
+                .balance(getBalanceOrDefault(request.getBalance()))
                 .build();
 
         Card saved = cardsRepository.save(card);
-        return cardMapper.toDto(saved);
+
+        CardDto dto = cardMapper.toDto(saved);
+        dto.setMaskedCardNumber(MaskingUtil.maskCardNumber(cardNumber));
+        return dto;
     }
 
-    public boolean isValid(String cardNumber) {
-        return (visaValidator.isValid(cardNumber) || mcValidator.isValid(cardNumber))
-                && cardsRepository.existsByCardNumber(cardNumber);
+    private String generateUniqueCardNumber() {
+        for (int i = 0; i < MAX_GENERATION_ATTEMPTS; i++) {
+            String cardNumber = debitCardGenerator.generateCardNumber();
+            String cardHash = HashUtil.sha256(cardNumber);
+
+            if (!cardsRepository.existsByCardHash(cardHash)) {
+                return cardNumber;
+            }
+        }
+        throw new RuntimeException("Не удалось сгенерировать уникальный номер карты после " + MAX_GENERATION_ATTEMPTS + " попыток");
+    }
+
+    private boolean isCardNumberUnique(String cardNumber) {
+        String cardHash = HashUtil.sha256(cardNumber);
+        return !cardsRepository.existsByCardHash(cardHash);
+    }
+
+    private BigDecimal getBalanceOrDefault(BigDecimal balance) {
+        return balance != null ? balance : BigDecimal.ZERO;
     }
 
     // 🔹 Пользователь: Получить свои карты (с фильтрацией по статусу)

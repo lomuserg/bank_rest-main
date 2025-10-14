@@ -12,8 +12,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateCardRequest {
-    @NotBlank
-    private String cardNumber;
 
     @NotNull
     private LocalDate expiryDate;
