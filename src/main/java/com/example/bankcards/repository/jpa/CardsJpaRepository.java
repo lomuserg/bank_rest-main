@@ -13,7 +13,16 @@ import java.util.Optional;
 @Repository
 public interface CardsJpaRepository extends JpaRepository<Card, Long> {
     Optional<Card> findByCardNumber(String cardNumber);
+
     List<Card> findAllByOwnerId(Long ownerId);
     Page<Card> findAllByOwnerId(Long ownerId, Pageable pageable);
+
     List<Card> findAllByOwnerIdAndStatus(Long ownerId, CardStatus status);
+    Page<Card> findAllByOwnerIdAndStatus(Long ownerId, CardStatus status, Pageable pageable);
+
+    Page<Card> findAllByStatus(CardStatus status, Pageable pageable);
+
+    Page<Card> findAll(Pageable pageable);
+
+    boolean existsByCardNumber(String cardNumber);
 }

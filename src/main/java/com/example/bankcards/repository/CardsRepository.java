@@ -15,10 +15,15 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class CardsRepository {
+
     private final CardsJpaRepository cardsJpaRepository;
 
     public Card save(Card card) {
         return cardsJpaRepository.save(card);
+    }
+
+    public boolean existsByCardNumber(String cardNumber) {
+        return cardsJpaRepository.existsByCardNumber(cardNumber);
     }
 
     public Card findById(Long id) {
@@ -41,6 +46,18 @@ public class CardsRepository {
 
     public List<Card> findAllByOwnerIdAndStatus(Long ownerId, CardStatus status) {
         return cardsJpaRepository.findAllByOwnerIdAndStatus(ownerId, status);
+    }
+
+    public Page<Card> findPageByOwnerIdAndStatus(Long ownerId, CardStatus status, Pageable pageable) {
+        return cardsJpaRepository.findAllByOwnerIdAndStatus(ownerId, status, pageable);
+    }
+
+    public Page<Card> findAllByStatus(CardStatus status, Pageable pageable) {
+        return cardsJpaRepository.findAllByStatus(status, pageable);
+    }
+
+    public Page<Card> findAll(Pageable pageable) {
+        return cardsJpaRepository.findAll(pageable);
     }
 
     public List<Card> findAll() {

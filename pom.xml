@@ -103,6 +103,20 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--GenerateCardNumber-->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <!--ValidateCardNumber-->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.7</version>
+        </dependency>
+
     </dependencies>
 
     <build>
