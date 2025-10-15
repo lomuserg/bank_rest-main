@@ -33,13 +33,11 @@ public class CardService {
     private final DebitCardGenerator debitCardGenerator;
     private final CardNumberCryptoUtil cryptoUtil;
 
-    private static final int MAX_GENERATION_ATTEMPTS = 10;
-
     @Transactional
     public CardDto createCard(CreateCardRequest request) {
         User owner = userService.getUserById(request.getOwnerId());
 
-        String cardNumber = generateUniqueCardNumber();
+        String cardNumber = debitCardGenerator.generateUniqueCardNumber(); // Один вызов вместо трех
         String encryptedCardNumber = cryptoUtil.encrypt(cardNumber);
 
         Card card = Card.builder()
@@ -53,21 +51,6 @@ public class CardService {
 
         Card saved = cardsRepository.save(card);
         return convertToDtoWithMaskedNumber(saved);
-    }
-
-    private String generateUniqueCardNumber() {
-        for (int i = 0; i < MAX_GENERATION_ATTEMPTS; i++) {
-            String cardNumber = debitCardGenerator.generateCardNumber();
-            if (isCardNumberUnique(cardNumber)) {
-                return cardNumber;
-            }
-        }
-        throw new RuntimeException("Failed to generate unique card number after " + MAX_GENERATION_ATTEMPTS + " attempts");
-    }
-
-    private boolean isCardNumberUnique(String cardNumber) {
-        String cardHash = HashUtil.sha256(cardNumber);
-        return !cardsRepository.existsByCardHash(cardHash);
     }
 
     private BigDecimal getBalanceOrDefault(BigDecimal balance) {

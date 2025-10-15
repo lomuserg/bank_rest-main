@@ -12,7 +12,7 @@ public class CardNumberCryptoUtil {
 
     public CardNumberCryptoUtil() {
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-        config.setPassword("my-secret-key-123"); // поменяй на свой ключ
+        config.setPassword("my-secret-key-123");
         config.setAlgorithm("PBEWithMD5AndDES");
         config.setKeyObtentionIterations("1000");
         config.setPoolSize("1");

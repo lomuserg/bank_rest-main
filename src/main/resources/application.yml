@@ -21,6 +21,11 @@ spring:
       hibernate:
         format_sql: true
 
+  app:
+    card:
+      generation:
+        max-attempts: 10
+
 server:
   port: 8080
 
