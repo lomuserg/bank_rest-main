@@ -68,4 +68,9 @@ public class CardsRepository {
         Card card = findById(id);
         cardsJpaRepository.deleteById(card.getId());
     }
+
+    public Card findByIdWithLock(Long id) {
+        return cardsJpaRepository.findByIdWithLock(id)
+                .orElseThrow(() -> new AppException("Card not found", HttpStatus.NOT_FOUND));
+    }
 }
