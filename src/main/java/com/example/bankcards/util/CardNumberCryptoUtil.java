@@ -3,6 +3,7 @@ package com.example.bankcards.util;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,19 +11,27 @@ public class CardNumberCryptoUtil {
 
     private final StringEncryptor encryptor;
 
-    public CardNumberCryptoUtil() {
-        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-        config.setPassword("my-secret-key-123");
-        config.setAlgorithm("PBEWithMD5AndDES");
-        config.setKeyObtentionIterations("1000");
-        config.setPoolSize("1");
-        config.setProviderName("SunJCE");
-        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
-        config.setStringOutputType("base64");
+    public CardNumberCryptoUtil(
+            @Value("${app.crypto.password}") String password,
+            @Value("${app.crypto.algorithm}") String algorithm,
+            @Value("${app.crypto.key-iterations}") String iterations,
+            @Value("${app.crypto.pool-size}") String poolSize,
+            @Value("${app.crypto.provider}") String providerName,
+            @Value("${app.crypto.salt-generator}") String saltGenerator,
+            @Value("${app.crypto.output-type}") String outputType) {
 
-        PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
-        encryptor.setConfig(config);
-        this.encryptor = encryptor;
+        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
+        config.setPassword(password);
+        config.setAlgorithm(algorithm);
+        config.setKeyObtentionIterations(iterations);
+        config.setPoolSize(poolSize);
+        config.setProviderName(providerName);
+        config.setSaltGeneratorClassName(saltGenerator);
+        config.setStringOutputType(outputType);
+
+        PooledPBEStringEncryptor pooledEncryptor = new PooledPBEStringEncryptor();
+        pooledEncryptor.setConfig(config);
+        this.encryptor = pooledEncryptor;
     }
 
     public String encrypt(String cardNumber) {

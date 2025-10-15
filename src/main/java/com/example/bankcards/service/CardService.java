@@ -37,7 +37,7 @@ public class CardService {
     public CardDto createCard(CreateCardRequest request) {
         User owner = userService.getUserById(request.getOwnerId());
 
-        String cardNumber = debitCardGenerator.generateUniqueCardNumber(); // Один вызов вместо трех
+        String cardNumber = debitCardGenerator.generateUniqueCardNumber();
         String encryptedCardNumber = cryptoUtil.encrypt(cardNumber);
 
         Card card = Card.builder()

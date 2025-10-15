@@ -15,7 +15,7 @@ public class DebitCardGenerator {
     private final Random random = new Random();
     private final CardsRepository cardsRepository;
 
-    @Value(value = "${spring.app.card.generation.max-attempts}")
+    @Value(value = "${app.card.generation.max-attempts}")
     private int maxGenerationAttempts;
 
     public String generateUniqueCardNumber() {

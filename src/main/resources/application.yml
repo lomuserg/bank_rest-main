@@ -21,10 +21,18 @@ spring:
       hibernate:
         format_sql: true
 
-  app:
-    card:
-      generation:
-        max-attempts: 10
+app:
+  card:
+    generation:
+      max-attempts: 10
+  crypto:
+    password: ${JASYPT_ENCRYPTOR_PASSWORD:my-secret-key-123}
+    algorithm: PBEWithMD5AndDES
+    key-iterations: 1000
+    pool-size: 1
+    provider: SunJCE
+    salt-generator: org.jasypt.salt.RandomSaltGenerator
+    output-type: base64
 
 server:
   port: 8080
