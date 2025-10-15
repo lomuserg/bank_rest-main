@@ -25,7 +25,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if ("/login".equals(path) || "/register".equals(path)) {
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/webjars")
+                || path.equals("/login")
+                || path.equals("/register")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -34,7 +39,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-
             try {
                 var authentication = userAuthenticationProvider.validateToken(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
