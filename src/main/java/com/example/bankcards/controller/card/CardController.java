@@ -10,21 +10,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/cards")
+@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 public class CardController {
 
     private final CardService cardService;
 
-    // GET /cards — просмотр своих карт (с пагинацией)
     @GetMapping
-    public ResponseEntity<Page<CardDto>> getMyCards(
+    public ResponseEntity<Page<CardDto>> getUserCards(
             @RequestParam(required = false) CardStatus status,
             Pageable pageable,
             @AuthenticationPrincipal UserDto userDto) {
@@ -33,33 +35,28 @@ public class CardController {
         return ResponseEntity.ok(cards);
     }
 
-    // POST /cards/block-request — запрос на блокировку своей карты
-    @PostMapping("/block-request")
+    @GetMapping("/search")
+    public ResponseEntity<List<CardDto>> searchCardsByLastFourDigits(
+            @RequestParam String lastFourDigits,
+            @AuthenticationPrincipal UserDto userDto) {
+
+        List<CardDto> cards = cardService.getUserCardsByLastFourDigits(
+                userDto.getLogin(),
+                lastFourDigits
+        );
+        return ResponseEntity.ok(cards);
+    }
+
+    @PostMapping("{cardId}/block")
     public ResponseEntity<?> requestBlockCard(
-            @RequestParam Long cardId,
+            @PathVariable Long cardId,
             @AuthenticationPrincipal UserDto userDto) {
 
         cardService.requestBlockCard(cardId, userDto.getLogin());
         return ResponseEntity.ok("Запрос на блокировку отправлен");
     }
 
-    // POST /cards/transfer — перевод между своими картами
-    @PostMapping("/transfer")
-    public ResponseEntity<?> transferMoney(
-            @RequestBody @Valid TransferRequest request,
-            @AuthenticationPrincipal UserDto userDto) {
-
-        cardService.transferBetweenOwnCards(
-                request.getFromCardId(),
-                request.getToCardId(),
-                request.getAmount(),
-                userDto.getLogin()
-        );
-        return ResponseEntity.ok().build();
-    }
-
-    // GET /cards/balance/{id} — просмотр баланса своей карты
-    @GetMapping("/balance/{cardId}")
+    @GetMapping("{cardId}/balance")
     public ResponseEntity<BigDecimal> getBalance(
             @PathVariable Long cardId,
             @AuthenticationPrincipal UserDto userDto) {
@@ -67,4 +64,14 @@ public class CardController {
         BigDecimal balance = cardService.getBalance(cardId, userDto.getLogin());
         return ResponseEntity.ok(balance);
     }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<?> transferMoney(
+            @RequestBody @Valid TransferRequest request,
+            @AuthenticationPrincipal UserDto userDto) {
+
+        cardService.transferBetweenOwnCards(request, userDto.getLogin());
+        return ResponseEntity.ok().build();
+    }
+
 }

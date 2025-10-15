@@ -11,3 +11,6 @@ databaseChangeLog:
   - include:
       file: changeset/fix_cards_autoincrement.sql
       relativeToChangelogFile: true
+  - include:
+      file: changeset/V5_add_card_hash.sql
+      relativeToChangelogFile: true

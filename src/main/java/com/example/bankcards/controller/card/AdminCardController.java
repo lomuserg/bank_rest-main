@@ -18,14 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class AdminCardController {
     private final CardService cardService;
 
-    // POST /admin/cards/create — создание новой карты
     @PostMapping("/create")
     public ResponseEntity<CardDto> createCard(@RequestBody CreateCardRequest request) {
         CardDto card = cardService.createCard(request);
         return ResponseEntity.ok(card);
     }
 
-    // GET /admin/cards — просмотр ВСЕХ карт (с фильтрацией и пагинацией)
     @GetMapping
     public ResponseEntity<Page<CardDto>> getAllCards(
             @RequestParam(required = false) CardStatus status,
@@ -34,24 +32,22 @@ public class AdminCardController {
         return ResponseEntity.ok(cards);
     }
 
-    // POST /admin/cards/{id}/block — принудительная блокировка
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCard(@PathVariable Long id) {
+        cardService.deleteCard(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/block")
     public ResponseEntity<?> blockCard(@PathVariable Long id) {
         cardService.blockCard(id);
         return ResponseEntity.ok().build();
     }
 
-    // POST /admin/cards/{id}/activate — разблокировка / активация
     @PostMapping("/{id}/activate")
     public ResponseEntity<?> activateCard(@PathVariable Long id) {
         cardService.activateCard(id);
         return ResponseEntity.ok().build();
     }
 
-    // DELETE /admin/cards/{id} — удаление карты
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCard(@PathVariable Long id) {
-        cardService.deleteCard(id);
-        return ResponseEntity.noContent().build();
-    }
 }

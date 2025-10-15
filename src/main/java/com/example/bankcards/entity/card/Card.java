@@ -27,6 +27,9 @@ public class Card {
     @Column(name = "card_number", length = 255, nullable = false, unique = true)
     private String cardNumber;
 
+    @Column(name = "card_hash", nullable = false, unique = true, length = 64)
+    private String cardHash;
+
     @Column(name = "expiry_date", nullable = false)
     private LocalDate expiryDate;
 

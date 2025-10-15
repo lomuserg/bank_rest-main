@@ -22,8 +22,8 @@ public class CardsRepository {
         return cardsJpaRepository.save(card);
     }
 
-    public boolean existsByCardNumber(String cardNumber) {
-        return cardsJpaRepository.existsByCardNumber(cardNumber);
+    public boolean existsByCardHash(String cardHash) {
+        return cardsJpaRepository.existsByCardHash(cardHash);
     }
 
     public Card findById(Long id) {
@@ -67,5 +67,10 @@ public class CardsRepository {
     public void deleteById(Long id) {
         Card card = findById(id);
         cardsJpaRepository.deleteById(card.getId());
+    }
+
+    public Card findByIdWithLock(Long id) {
+        return cardsJpaRepository.findByIdWithLock(id)
+                .orElseThrow(() -> new AppException("Card not found", HttpStatus.NOT_FOUND));
     }
 }
