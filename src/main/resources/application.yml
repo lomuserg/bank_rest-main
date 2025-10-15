@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/bankCards
-    username: user
-    password: secret
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/bankCards}
+    username: ${SPRING_DATASOURCE_USERNAME:user}
+    password: ${SPRING_DATASOURCE_PASSWORD:secret}
 
   liquibase:
     enabled: true
@@ -41,10 +41,3 @@ security:
   jwt:
     token:
       secret-key: my_very_secret_key_here_1234567890
-
-
-Что нужно сделать:
-  - Указать настройки подключения к базе данных.
-  - Указать порт приложения.
-  - Настроить параметры безопасности и JWT.
-  - Включить Swagger UI.
